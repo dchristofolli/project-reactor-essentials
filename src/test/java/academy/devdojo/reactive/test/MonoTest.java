@@ -30,15 +30,15 @@ import reactor.test.StepVerifier;
   2. Publisher sends all the objects it has. (onComplete) subscriber and subscription will be canceled
   3. There is an error. (onError) -> subscriber and subscription will be canceled
  */
-public class MonoTest {
+class MonoTest {
 
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         BlockHound.install();
     }
 
     @Test
-    public void blockHoundWorks() {
+    void blockHoundWorks() {
         try {
             FutureTask<?> task = new FutureTask<>(() -> {
                 Thread.sleep(0);
@@ -54,7 +54,7 @@ public class MonoTest {
     }
 
     @Test
-    public void monoSubscriber() {
+    void monoSubscriber() {
         String name = "William Suane";
         Mono<String> mono = Mono.just(name)
             .log();
@@ -67,7 +67,7 @@ public class MonoTest {
     }
 
     @Test
-    public void monoSubscriberConsumer() {
+    void monoSubscriberConsumer() {
         String name = "William Suane";
         Mono<String> mono = Mono.just(name)
             .log();
@@ -81,7 +81,7 @@ public class MonoTest {
     }
 
     @Test
-    public void monoSubscriberConsumerError() {
+    void monoSubscriberConsumerError() {
         String name = "William Suane";
         Mono<String> mono = Mono.just(name)
             .map(s -> {
@@ -99,7 +99,7 @@ public class MonoTest {
     }
 
     @Test
-    public void monoSubscriberConsumerComplete() {
+    void monoSubscriberConsumerComplete() {
         String name = "William Suane";
         Mono<String> mono = Mono.just(name)
             .log()
@@ -117,7 +117,7 @@ public class MonoTest {
     }
 
     @Test
-    public void monoSubscriberConsumerSubscription() {
+    void monoSubscriberConsumerSubscription() {
         String name = "William Suane";
         Mono<String> mono = Mono.just(name)
             .log()
@@ -136,7 +136,7 @@ public class MonoTest {
     }
 
     @Test
-    public void monoDoOnMethods() {
+    void monoDoOnMethods() {
         String name = "William Suane";
         Mono<Object> mono = Mono.just(name)
             .log()
@@ -155,7 +155,7 @@ public class MonoTest {
     }
 
     @Test
-    public void monoDoOnError() {
+    void monoDoOnError() {
         Mono<Object> error = Mono.error(new IllegalArgumentException("Illegal argument exception"))
             .doOnError(e -> MonoTest.log.error("Error message: {}", e.getMessage()))
             .doOnNext(s -> log.info("Executing this doOnNext"))
@@ -167,7 +167,7 @@ public class MonoTest {
     }
 
     @Test
-    public void monoOnErrorResume() {
+    void monoOnErrorResume() {
         String name = "William Suane";
         Mono<Object> error = Mono.error(new IllegalArgumentException("Illegal argument exception"))
             .onErrorResume(s -> {
@@ -183,7 +183,7 @@ public class MonoTest {
     }
 
     @Test
-    public void monoOnErrorReturn() {
+    void monoOnErrorReturn() {
         String name = "William Suane";
         Mono<Object> error = Mono.error(new IllegalArgumentException("Illegal argument exception"))
             .onErrorReturn("EMPTY")

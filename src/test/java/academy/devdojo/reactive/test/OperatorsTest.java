@@ -22,15 +22,15 @@ import reactor.test.StepVerifier.Step;
 import reactor.util.function.Tuple3;
 
 @Slf4j
-public class OperatorsTest {
+class OperatorsTest {
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         BlockHound.install(builder ->
             builder.allowBlockingCallsInside("org.slf4j.impl.SimpleLogger","write"));
     }
 
     @Test
-    public void subscribeOnSimple() {
+    void subscribeOnSimple() {
         Flux<Integer> flux = Flux.range(1, 4)
             .map(i -> {
                 log.info("Map 1 - Number {} on Thread {}", i, Thread.currentThread().getName());
@@ -49,7 +49,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void publishOnSimple() {
+    void publishOnSimple() {
         Flux<Integer> flux = Flux.range(1, 4)
             .map(i -> {
                 log.info("Map 1 - Number {} on Thread {}", i, Thread.currentThread().getName());
@@ -68,7 +68,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void multipleSubscribeOnSimple() {
+    void multipleSubscribeOnSimple() {
         Flux<Integer> flux = Flux.range(1, 4)
             .subscribeOn(Schedulers.boundedElastic())
             .map(i -> {
@@ -88,7 +88,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void multiplePublishOnSimple() {
+    void multiplePublishOnSimple() {
         Flux<Integer> flux = Flux.range(1, 4)
             .publishOn(Schedulers.single())
             .map(i -> {
@@ -108,7 +108,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void publishAndSubscribeOnSimple() {
+    void publishAndSubscribeOnSimple() {
         Flux<Integer> flux = Flux.range(1, 4)
             .publishOn(Schedulers.single())
             .map(i -> {
@@ -128,7 +128,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void subscribeAndPublishOnSimple() {
+    void subscribeAndPublishOnSimple() {
         Flux<Integer> flux = Flux.range(1, 4)
             .subscribeOn(Schedulers.single())
             .map(i -> {
@@ -148,7 +148,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void subscribeOnIO() throws Exception {
+    void subscribeOnIO() throws Exception {
         Mono<List<String>> list = Mono.fromCallable(() -> Files.readAllLines(Path.of("text-file")))
             .log()
             .subscribeOn(Schedulers.boundedElastic());
@@ -166,7 +166,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void switchIfEmptyOperator() {
+    void switchIfEmptyOperator() {
         Flux<Object> flux = emptyFlux()
             .switchIfEmpty(Flux.just("not empty anymore"))
             .log();
@@ -183,7 +183,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void deferOperator() throws Exception {
+    void deferOperator() throws Exception {
         Mono<Long> just = Mono.just(System.currentTimeMillis());
         Mono<Long> defer = Mono.defer(() -> Mono.just(System.currentTimeMillis()));
 
@@ -201,7 +201,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void concatOperator() {
+    void concatOperator() {
         Flux<String> flux1 = Flux.just("a", "b");
         Flux<String> flux2 = Flux.just("c", "d");
 
@@ -216,7 +216,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void concatOperatorError() {
+    void concatOperatorError() {
         Flux<String> flux1 = Flux.just("a", "b")
             .map(s -> {
                 if (s.equals("b")) {
@@ -238,7 +238,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void concatWithOperator() {
+    void concatWithOperator() {
         Flux<String> flux1 = Flux.just("a", "b");
         Flux<String> flux2 = Flux.just("c", "d");
 
@@ -253,7 +253,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void combineLatestOperator() {
+    void combineLatestOperator() {
         Flux<String> flux1 = Flux.just("a", "b");
         Flux<String> flux2 = Flux.just("c", "d");
 
@@ -270,7 +270,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void mergeOperator() throws Exception {
+    void mergeOperator() throws Exception {
         Flux<String> flux1 = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
         Flux<String> flux2 = Flux.just("c", "d");
 
@@ -291,7 +291,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void mergeWithOperator() throws Exception {
+    void mergeWithOperator() throws Exception {
         Flux<String> flux1 = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
         Flux<String> flux2 = Flux.just("c", "d");
 
@@ -308,7 +308,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void mergeSequentialOperator() throws Exception {
+    void mergeSequentialOperator() throws Exception {
         Flux<String> flux1 = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
         Flux<String> flux2 = Flux.just("c", "d");
 
@@ -325,7 +325,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void mergeDelayErrorOperator() throws Exception {
+    void mergeDelayErrorOperator() throws Exception {
         Flux<String> flux1 = Flux.just("a", "b")
             .map(s ->{
                 if(s.equals("b")){
@@ -350,7 +350,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void flatMapOperator() throws Exception{
+    void flatMapOperator() throws Exception{
         Flux<String> flux = Flux.just("a", "b");
 
         Flux<String> flatFlux = flux.map(String::toUpperCase)
@@ -365,7 +365,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void flatMapSequentialOperator() throws Exception{
+    void flatMapSequentialOperator() throws Exception{
         Flux<String> flux = Flux.just("a", "b");
 
         Flux<String> flatFlux = flux.map(String::toUpperCase)
@@ -379,11 +379,11 @@ public class OperatorsTest {
             .verifyComplete();
     }
 
-    public Flux<String> findByName(String name){
+    Flux<String> findByName(String name){
         return name.equals("A") ? Flux.just("nameA1","nameA2").delayElements(Duration.ofMillis(100)) : Flux.just("nameB1","nameB2");
     }
     @Test
-    public void zipOperator(){
+    void zipOperator(){
         Flux<String> titleFlux = Flux.just("Grand Blue", "Baki");
         Flux<String> studioFlux = Flux.just("Zero-G", "TMS Entertainment");
         Flux<Integer> episodesFlux = Flux.just(12, 24);
@@ -401,7 +401,7 @@ public class OperatorsTest {
     }
 
     @Test
-    public void zipWithOperator(){
+    void zipWithOperator(){
         Flux<String> titleFlux = Flux.just("Grand Blue", "Baki");
         Flux<Integer> episodesFlux = Flux.just(12, 24);
 

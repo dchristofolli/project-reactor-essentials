@@ -1,7 +1,5 @@
 package academy.devdojo.reactive.test;
 
-import java.time.Duration;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,74 +11,78 @@ import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
+import java.util.List;
+
 @Slf4j
-public class FluxTest {
+class FluxTest {
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         BlockHound.install();
     }
+
     @Test
-    public void fluxSubscriber() {
+    void fluxSubscriber() {
         Flux<String> fluxString = Flux.just("William", "Suane", "DevDojo", "Academy")
-            .log();
+                .log();
 
         StepVerifier.create(fluxString)
-            .expectNext("William", "Suane", "DevDojo", "Academy")
-            .verifyComplete();
+                .expectNext("William", "Suane", "DevDojo", "Academy")
+                .verifyComplete();
     }
 
     @Test
-    public void fluxSubscriberNumbers() {
+    void fluxSubscriberNumbers() {
         Flux<Integer> flux = Flux.range(1, 5)
-            .log();
+                .log();
 
         flux.subscribe(i -> log.info("Number {}", i));
 
         log.info("-----------------------------------");
         StepVerifier.create(flux)
-            .expectNext(1, 2, 3, 4, 5)
-            .verifyComplete();
+                .expectNext(1, 2, 3, 4, 5)
+                .verifyComplete();
     }
 
     @Test
-    public void fluxSubscriberFromList() {
+    void fluxSubscriberFromList() {
         Flux<Integer> flux = Flux.fromIterable(List.of(1, 2, 3, 4, 5))
-            .log();
+                .log();
 
         flux.subscribe(i -> log.info("Number {}", i));
 
         log.info("-----------------------------------");
         StepVerifier.create(flux)
-            .expectNext(1, 2, 3, 4, 5)
-            .verifyComplete();
+                .expectNext(1, 2, 3, 4, 5)
+                .verifyComplete();
     }
 
     @Test
-    public void fluxSubscriberNumbersError() {
+    void fluxSubscriberNumbersError() {
         Flux<Integer> flux = Flux.range(1, 5)
-            .log()
-            .map(i -> {
-                if (i == 4) {
-                    throw new IndexOutOfBoundsException("index error");
-                }
-                return i;
-            });
+                .log()
+                .map(i -> {
+                    if (i == 4) {
+                        throw new IndexOutOfBoundsException("index error");
+                    }
+                    return i;
+                });
 
         flux.subscribe(i -> log.info("Number {}", i), Throwable::printStackTrace,
-            () -> log.info("DONE!"), subscription -> subscription.request(3));
+                () -> log.info("DONE!"), subscription -> subscription.request(3));
 
         log.info("-----------------------------------");
 
         StepVerifier.create(flux)
-            .expectNext(1, 2, 3)
-            .expectError(IndexOutOfBoundsException.class)
-            .verify();
+                .expectNext(1, 2, 3)
+                .expectError(IndexOutOfBoundsException.class)
+                .verify();
     }
 
     @Test
-    public void fluxSubscriberNumbersUglyBackpressure() {
+    void fluxSubscriberNumbersUglyBackpressure() {
         Flux<Integer> flux = Flux.range(1, 10)
-            .log();
+                .log();
 
         flux.subscribe(new Subscriber<>() {
             private int count = 0;
@@ -116,14 +118,14 @@ public class FluxTest {
         log.info("-----------------------------------");
 
         StepVerifier.create(flux)
-            .expectNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-            .verifyComplete();
+                .expectNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+                .verifyComplete();
     }
 
     @Test
-    public void fluxSubscriberNumbersNotSoUglyBackpressure() {
+    void fluxSubscriberNumbersNotSoUglyBackpressure() {
         Flux<Integer> flux = Flux.range(1, 10)
-            .log();
+                .log();
 
         flux.subscribe(new BaseSubscriber<>() {
             private int count = 0;
@@ -147,58 +149,58 @@ public class FluxTest {
         log.info("-----------------------------------");
 
         StepVerifier.create(flux)
-            .expectNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-            .verifyComplete();
+                .expectNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+                .verifyComplete();
     }
 
     @Test
-    public void fluxSubscriberPrettyBackpressure() {
+    void fluxSubscriberPrettyBackpressure() {
         Flux<Integer> flux = Flux.range(1, 10)
-            .log()
-            .limitRate(3);
+                .log()
+                .limitRate(3);
 
         flux.subscribe(i -> log.info("Number {}", i));
 
         log.info("-----------------------------------");
         StepVerifier.create(flux)
-            .expectNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-            .verifyComplete();
+                .expectNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+                .verifyComplete();
     }
 
     @Test
-    public void fluxSubscriberIntervalOne() throws Exception {
+    void fluxSubscriberIntervalOne() throws Exception {
         Flux<Long> interval = Flux.interval(Duration.ofMillis(100))
-            .take(10)
-            .log();
+                .take(10)
+                .log();
 
         interval.subscribe(i -> log.info("Number {}", i));
 
     }
 
     @Test
-    public void fluxSubscriberIntervalTwo() throws Exception {
+    void fluxSubscriberIntervalTwo() throws Exception {
         StepVerifier.withVirtualTime(this::createInterval)
-            .expectSubscription()
-            .expectNoEvent(Duration.ofDays(1))
-            .thenAwait(Duration.ofDays(1))
-            .expectNext(0L)
-            .thenAwait(Duration.ofDays(1))
-            .expectNext(1L)
-            .thenCancel()
-            .verify();
+                .expectSubscription()
+                .expectNoEvent(Duration.ofDays(1))
+                .thenAwait(Duration.ofDays(1))
+                .expectNext(0L)
+                .thenAwait(Duration.ofDays(1))
+                .expectNext(1L)
+                .thenCancel()
+                .verify();
     }
 
     private Flux<Long> createInterval() {
         return Flux.interval(Duration.ofDays(1))
-            .log();
+                .log();
     }
 
     @Test
-    public void connectableFlux() throws Exception {
+    void connectableFlux() throws Exception {
         ConnectableFlux<Integer> connectableFlux = Flux.range(1, 10)
-            .log()
-            .delayElements(Duration.ofMillis(100))
-            .publish();
+                .log()
+                .delayElements(Duration.ofMillis(100))
+                .publish();
 
 //        connectableFlux.connect();
 
@@ -215,29 +217,29 @@ public class FluxTest {
 //        connectableFlux.subscribe(i -> log.info("Sub2 number {}", i));
 
         StepVerifier
-            .create(connectableFlux)
-            .then(connectableFlux::connect)
-            .thenConsumeWhile(i -> i <= 5)
-            .expectNext(6, 7, 8, 9, 10)
-            .expectComplete()
-            .verify();
+                .create(connectableFlux)
+                .then(connectableFlux::connect)
+                .thenConsumeWhile(i -> i <= 5)
+                .expectNext(6, 7, 8, 9, 10)
+                .expectComplete()
+                .verify();
     }
 
     @Test
-    public void connectableFluxAutoConnect() throws Exception {
+    void connectableFluxAutoConnect() throws Exception {
         Flux<Integer> fluxAutoConnect = Flux.range(1, 5)
-            .log()
-            .delayElements(Duration.ofMillis(100))
-            .publish()
-            .autoConnect(2);
+                .log()
+                .delayElements(Duration.ofMillis(100))
+                .publish()
+                .autoConnect(2);
 
 
         StepVerifier
-            .create(fluxAutoConnect)
-            .then(fluxAutoConnect::subscribe)
-            .expectNext(1,2,3,4,5)
-            .expectComplete()
-            .verify();
+                .create(fluxAutoConnect)
+                .then(fluxAutoConnect::subscribe)
+                .expectNext(1, 2, 3, 4, 5)
+                .expectComplete()
+                .verify();
     }
 
 }
